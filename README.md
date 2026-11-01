@@ -4,9 +4,9 @@
 
 ---
 
-**EN:** A NeoForge 1.21.1 port of **Hex Casting** by petrak@ (aka gamma-delta) — a Minecraft mod about casting powerful, programmable magical effects inspired by PSI.
+**EN:** A NeoForge 1.21.1 unofficial port of **Hex Casting** by petrak@ (aka gamma-delta) — a Minecraft mod about casting powerful, programmable magical effects inspired by PSI.
 
-**RU:** Порт **Hex Casting** на NeoForge 1.21.1 от A1ex_Rom. Мод о создании мощных программируемых заклинаний, вдохновлённый PSI.
+**RU:** неофициальный порт **Hex Casting** на NeoForge 1.21.1 от A1ex_Rom. Мод о создании мощных программируемых заклинаний, вдохновлённый PSI. специально портировался под свой сервер.
 
 **Port maintainer / Автор порта:** A1ex_Rom
 
