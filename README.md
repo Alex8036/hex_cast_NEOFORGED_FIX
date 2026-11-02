@@ -22,7 +22,7 @@
 - JEI *(optional / опционально)*
 
 ## Links / Ссылки
-
+- [Modrinth / Модринт](https://modrinth.com/mod/hexcast-neoforged/versions)
 - [Documentation / Документация](https://fallingcolors.github.io/HexMod/)
 - [Original Curseforge](https://www.curseforge.com/minecraft/mc-mods/hexcasting) | [Original Modrinth](https://modrinth.com/mod/hex-casting)
 - [Port repository / Репозиторий порта](https://github.com/a1exrom/hex_cast_NEOFORGED)
