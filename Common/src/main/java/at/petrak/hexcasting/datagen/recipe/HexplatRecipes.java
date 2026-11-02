@@ -142,7 +142,7 @@ public class HexplatRecipes extends PaucalRecipeProvider {
             .define('F', ingredients.goldIngot())
             .define('A', HexItems.CHARGED_AMETHYST)
             // why in god's name does minecraft have two different places for item tags
-            .define('D', ItemTags.MUSIC_DISCS)
+            .define('D', ItemTags.CREEPER_DROP_MUSIC_DISCS)
             .pattern(" F ")
             .pattern("FAF")
             .pattern(" D ")
@@ -286,6 +286,11 @@ public class HexplatRecipes extends PaucalRecipeProvider {
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(Blocks.AMETHYST_BLOCK), RecipeCategory.BUILDING_BLOCKS, HexBlocks.AMETHYST_TILES)
             .unlockedBy("has_item", hasItem(Blocks.AMETHYST_BLOCK))
             .save(recipes, modLoc("stonecutting/amethyst_tiles"));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, HexItems.AMETHYST_DUST, 4)
+            .requires(Items.AMETHYST_SHARD)
+            .unlockedBy("has_item", hasItem(Items.AMETHYST_SHARD))
+            .save(recipes, modLoc("amethyst_dust_from_shard"));
 
         ringAll(RecipeCategory.BUILDING_BLOCKS, HexBlocks.SCROLL_PAPER, 8, Items.PAPER, Items.AMETHYST_SHARD)
             .unlockedBy("has_item", hasItem(Items.AMETHYST_SHARD)).save(recipes);

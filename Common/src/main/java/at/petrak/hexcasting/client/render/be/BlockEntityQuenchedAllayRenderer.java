@@ -10,8 +10,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Blocks;
 
 // TODO: this doesn't cover the block being *behind* something. Is it possible to cleanly do that?
 // it would probably require some depth-texture bullshit that I don't want to worry about
@@ -27,10 +29,21 @@ public class BlockEntityQuenchedAllayRenderer implements BlockEntityRenderer<Blo
         var buffer = bufSource.getBuffer(RenderType.translucent());
         var pose = ps.last();
 
-        var idx = Math.abs(GaslightingTracker.getGaslightingAmount() % BlockQuenchedAllay.VARIANTS);
-        var model = RegisterClientStuff.QUENCHED_ALLAY_VARIANTS.get(BuiltInRegistries.BLOCK.getKey(block)).get(idx);
+        var variants = RegisterClientStuff.QUENCHED_ALLAY_VARIANTS.get(BuiltInRegistries.BLOCK.getKey(block));
+        var model = getFallbackModel(dispatcher);
+        if (variants != null && !variants.isEmpty()) {
+            var idx = Math.abs(GaslightingTracker.getGaslightingAmount() % variants.size());
+            var pick = variants.get(idx);
+            if (pick != null) {
+                model = pick;
+            }
+        }
 
         dispatcher.getModelRenderer().renderModel(pose, buffer, null, model, 1f, 1f, 1f, packedLight, packedOverlay);
+    }
+
+    private static BakedModel getFallbackModel(BlockRenderDispatcher dispatcher) {
+        return dispatcher.getBlockModelShaper().getBlockModel(Blocks.BARRIER.defaultBlockState());
     }
 
     @Override

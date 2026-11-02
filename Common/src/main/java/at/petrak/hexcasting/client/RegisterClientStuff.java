@@ -279,7 +279,9 @@ public class RegisterClientStuff {
             for (int i = 0; i < BlockQuenchedAllay.VARIANTS; i++) {
                 var variantLoc = modLoc(locStart + blockLoc.getPath() + "_" + i);
                 var model = map.get(variantLoc);
-                list.add(model);
+                if (model != null) {
+                    list.add(model);
+                }
             }
             QUENCHED_ALLAY_VARIANTS.put(blockLoc, list);
         }

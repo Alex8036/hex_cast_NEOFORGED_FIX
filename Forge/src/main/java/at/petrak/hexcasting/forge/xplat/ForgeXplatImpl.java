@@ -248,7 +248,10 @@ public class ForgeXplatImpl implements IXplatAbstractions {
         boolean allowed = tag.getBoolean(TAG_FLIGHT_ALLOWED);
         if (allowed) {
             var timeLeft = tag.getInt(TAG_FLIGHT_TIME);
-            var origin = HexUtils.vecFromNBT(tag.getLongArray(TAG_FLIGHT_ORIGIN));
+            // Vec3.serializeToNBT writes a CompoundTag (x/y/z doubles); reading it as a
+            // long array silently produced the zero vector, which made ranged flight
+            // (Anchorite's Flight) treat the caster as outside the radius instantly.
+            var origin = HexUtils.vecFromNBT(tag.getCompound(TAG_FLIGHT_ORIGIN));
             var radius = tag.getDouble(TAG_FLIGHT_RADIUS);
             var dimension = ResourceKey.create(Registries.DIMENSION,
                 ResourceLocation.parse(tag.getString(TAG_FLIGHT_DIMENSION)));

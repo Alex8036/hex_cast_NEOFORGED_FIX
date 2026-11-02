@@ -199,7 +199,6 @@ processResources {
                 .replace("/tags/fluids/", "/tags/fluid/")
                 .replace("/tags/game_events/", "/tags/game_event/")
                 .replace("/tags/items/", "/tags/item/")
-                .replace("data/forge/loot_modifiers/", "data/neoforge/loot_modifiers/")
         }
     }
 

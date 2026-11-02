@@ -6,11 +6,13 @@ import at.petrak.hexcasting.api.casting.iota.Iota;
 import at.petrak.hexcasting.api.casting.iota.PatternIota;
 import at.petrak.hexcasting.api.casting.math.HexPattern;
 import at.petrak.hexcasting.api.item.IotaHolderItem;
-import at.petrak.hexcasting.api.utils.NBTHelper;
 import at.petrak.hexcasting.client.gui.PatternTooltipComponent;
+import at.petrak.hexcasting.api.utils.NBTHelper;
 import at.petrak.hexcasting.common.blocks.circles.BlockEntitySlate;
+import at.petrak.hexcasting.common.lib.HexBlockEntities;
 import at.petrak.hexcasting.common.lib.hex.HexIotaTypes;
 import at.petrak.hexcasting.common.misc.PatternTooltip;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -41,8 +43,42 @@ public class ItemSlate extends BlockItem implements IotaHolderItem {
         return Component.translatable(key);
     }
 
+    /**
+     * The slab block entity data used to live under the legacy {@code BlockEntityTag} item NBT
+     * key, which vanilla no longer honors; on Minecraft 1.21 it must be carried by the
+     * {@link DataComponents#BLOCK_ENTITY_DATA} component so placement copies the pattern into the
+     * placed {@link BlockEntitySlate}.
+     */
+    public static @Nullable CompoundTag getBlockEntityData(ItemStack stack) {
+        var customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (customData != null) {
+            return customData.copyTag();
+        }
+        // Old saves stored the block entity tag under the legacy "BlockEntityTag" key of the
+        // vanilla custom_data component; migrate it into the real component on first read.
+        var legacy = NBTHelper.getCompound(stack, "BlockEntityTag");
+        if (legacy != null && !legacy.isEmpty()) {
+            setBlockEntityData(stack, legacy);
+            NBTHelper.remove(stack, "BlockEntityTag");
+            return legacy;
+        }
+        return null;
+    }
+
+    public static void setBlockEntityData(@Nullable ItemStack stack, @Nullable CompoundTag bet) {
+        if (stack != null) {
+            if (bet == null || bet.isEmpty()) {
+                stack.set(DataComponents.BLOCK_ENTITY_DATA, null);
+            } else {
+                // BlockItem.setBlockEntityData stamps the block entity type id into the
+                // component (the `minecraft:block_entity_data` component format requires it)
+                BlockItem.setBlockEntityData(stack, HexBlockEntities.SLATE_TILE, bet);
+            }
+        }
+    }
+
     public static boolean hasPattern(ItemStack stack) {
-        var bet = NBTHelper.getCompound(stack, "BlockEntityTag");
+        var bet = getBlockEntityData(stack);
         if (bet != null) {
             return bet.contains(BlockEntitySlate.TAG_PATTERN, Tag.TAG_COMPOUND) &&
                 !bet.getCompound(BlockEntitySlate.TAG_PATTERN).isEmpty();
@@ -53,7 +89,7 @@ public class ItemSlate extends BlockItem implements IotaHolderItem {
     @SoftImplement("IForgeItem")
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
         if (!hasPattern(stack)) {
-            NBTHelper.remove(stack, "BlockEntityTag");
+            setBlockEntityData(stack, null);
         }
         return false;
     }
@@ -61,14 +97,14 @@ public class ItemSlate extends BlockItem implements IotaHolderItem {
     @Override
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
         if (!hasPattern(pStack)) {
-            NBTHelper.remove(pStack, "BlockEntityTag");
+            setBlockEntityData(pStack, null);
         }
     }
 
     @Override
     public @Nullable
     CompoundTag readIotaTag(ItemStack stack) {
-        var bet = NBTHelper.getCompound(stack, "BlockEntityTag");
+        var bet = getBlockEntityData(stack);
 
         if (bet == null || !bet.contains(BlockEntitySlate.TAG_PATTERN, Tag.TAG_COMPOUND)) {
             return null;
@@ -98,29 +134,29 @@ public class ItemSlate extends BlockItem implements IotaHolderItem {
     public void writeDatum(ItemStack stack, Iota datum) {
         if (this.canWrite(stack, datum)) {
             if (datum == null) {
-                var beTag = NBTHelper.getCompound(stack, "BlockEntityTag");
+                var beTag = getBlockEntityData(stack);
                 if (beTag != null) {
                     beTag.remove(BlockEntitySlate.TAG_PATTERN);
-                }
-                if (beTag == null || beTag.isEmpty()) {
-                    NBTHelper.remove(stack, "BlockEntityTag");
-                } else {
-                    NBTHelper.putCompound(stack, "BlockEntityTag", beTag);
+                    if (beTag.isEmpty() || beTag.size() == 1 && beTag.contains("id")) {
+                        setBlockEntityData(stack, null);
+                    } else {
+                        setBlockEntityData(stack, beTag);
+                    }
                 }
             } else if (datum instanceof PatternIota pat) {
-                var beTag = NBTHelper.getCompound(stack, "BlockEntityTag");
+                var beTag = getBlockEntityData(stack);
                 if (beTag == null) {
                     beTag = new CompoundTag();
                 }
                 beTag.put(BlockEntitySlate.TAG_PATTERN, pat.getPattern().serializeToNBT());
-                NBTHelper.putCompound(stack, "BlockEntityTag", beTag);
+                setBlockEntityData(stack, beTag);
             }
         }
     }
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-        var bet = NBTHelper.getCompound(stack, "BlockEntityTag");
+        var bet = getBlockEntityData(stack);
 
         if (bet != null && bet.contains(BlockEntitySlate.TAG_PATTERN, Tag.TAG_COMPOUND)) {
             var patTag = bet.getCompound(BlockEntitySlate.TAG_PATTERN);
