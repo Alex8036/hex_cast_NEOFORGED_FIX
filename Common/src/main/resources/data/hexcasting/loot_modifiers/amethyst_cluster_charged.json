@@ -1,0 +1,28 @@
+{
+  "type": "neoforge:add_item",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:blocks/amethyst_cluster"
+    },
+    {
+      "condition": "minecraft:inverted",
+      "term": {
+        "condition": "minecraft:match_tool",
+        "predicate": {
+          "enchantments": [
+            { "enchantment": "minecraft:silk_touch" }
+          ]
+        }
+      }
+    }
+  ],
+  "item": "hexcasting:charged_amethyst",
+  "functions": [
+    {
+      "function": "minecraft:set_count",
+      "count": 1.0,
+      "add": false
+    }
+  ]
+}
