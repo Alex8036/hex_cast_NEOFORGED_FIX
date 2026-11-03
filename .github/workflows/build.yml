@@ -3,7 +3,7 @@ name: Build Mod
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Это позволит запускать сборку вручную кнопкой
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,6 +20,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
       - name: Build with Gradle
         run: ./gradlew build -x test
