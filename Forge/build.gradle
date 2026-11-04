@@ -1,7 +1,8 @@
 plugins {
     id "java"
     id "org.jetbrains.kotlin.jvm"
-    id "dev.architectury.loom" // <-- ЭТА СТРОКА БЫЛА ПРОПУЩЕНА
+    id "dev.architectury.loom"
+    id "architectury-plugin" // ОБЯЗАТЕЛЬНО для работы блока architectury
 }
 
 architectury {
@@ -21,37 +22,28 @@ configurations {
 }
 
 dependencies {
-    // Базовая зависимость NeoForge
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
-
-    // Architectury API
     modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
 
-    // Модуль Common
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
-    // CURIOUS API
+    // Зависимости для специфичного кода Forge (Curios, JEI и т.д.)
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
-    // PATCHOULI
     modCompileOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
     modRuntimeOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
 
-    // JEI
     modCompileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.2.313"
     modRuntimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.2.313"
 
-    // PEHKUI
     modCompileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
     modRuntimeOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
 
-    // CAELUS
     modCompileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
     modRuntimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
 
-    // PAUCAL
     modCompileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
     modRuntimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
 }
