@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "org.jetbrains.kotlin.jvm"
     id "dev.architectury.loom"
-    id "architectury-plugin" // ОБЯЗАТЕЛЬНО для работы блока architectury
+    id "architectury-plugin"
 }
 
 architectury {
@@ -28,7 +28,7 @@ dependencies {
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
-    // Зависимости для специфичного кода Forge (Curios, JEI и т.д.)
+    // Зависимости для Forge
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
