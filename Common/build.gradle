@@ -5,7 +5,8 @@ plugins {
 }
 
 architectury {
-    common(rootProject.enabled_platforms.split(","))
+    // ИСПРАВЛЕНО: указываем оба загрузчика
+    common("fabric", "neoforge")
 }
 
 loom {
