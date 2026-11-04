@@ -18,9 +18,9 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url 'https://maven.blamejared.com' } // Patchouli + JEI
-    maven { url 'https://maven.theillusivec4.top/' } // Caelus
-    maven { url 'https://api.modrinth.com/maven' } // Pehkui
+    maven { url 'https://api.modrinth.com/maven' } // Основной источник
+    maven { url 'https://maven.blamejared.com' }
+    maven { url 'https://maven.theillusivec4.top/' }
 }
 
 pkpcpbp {
@@ -46,29 +46,24 @@ subprojects {
     apply plugin: 'org.jetbrains.kotlin.jvm'
     apply plugin: 'maven-publish'
 
-    // 👇 ДОБАВЛЯЕМ РЕПОЗИТОРИИ ДЛЯ КАЖДОГО МОДУЛЯ 👇
     repositories {
         mavenCentral()
+        maven { url 'https://api.modrinth.com/maven' }
         maven { url 'https://maven.blamejared.com' }
         maven { url 'https://maven.theillusivec4.top/' }
-        maven { url 'https://api.modrinth.com/maven' }
     }
 
     dependencies {
-        // 👇 ВОТ ОНИ, НАШИ ЗАВИСИМОСТИ 👇
-        // Patchouli (нужен для компиляции и в рантайме)
-        compileOnly "vazkii.patchouli:patchouli-neoforge:1.21.1-93:api"
-        runtimeOnly "vazkii.patchouli:patchouli-neoforge:1.21.1-93"
+        // 👇 ИСПРАВЛЕННЫЕ КООРДИНАТЫ (через Modrinth Maven) 👇
+        compileOnly "maven.modrinth:patchouli:1.21.1-93-neoforge"
+        runtimeOnly "maven.modrinth:patchouli:1.21.1-93-neoforge"
 
-        // JEI (только API для компиляции, полный JAR для тестов)
-        compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.52.0.422"
-        runtimeOnly "mezz.jei:jei-1.21.1-neoforge:19.52.0.422"
+        compileOnly "maven.modrinth:jei:19.52.0.422"
+        runtimeOnly "maven.modrinth:jei:19.52.0.422"
 
-        // Caelus (для полета)
-        compileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
-        runtimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
+        compileOnly "maven.modrinth:caelus:7.0.1+1.21.1"
+        runtimeOnly "maven.modrinth:caelus:7.0.1+1.21.1"
 
-        // Pehkui (для изменения размера)
         implementation "maven.modrinth:pehkui:3.8.3+1.21-neoforge"
     }
 
