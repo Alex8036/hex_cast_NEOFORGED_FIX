@@ -6,7 +6,9 @@ plugins {
 
 architectury {
     // ИСПРАВЛЕНО: указываем neoforge, а не forge
-    common("neoforge")
+    architectury {
+        common("fabric", "neoforge") // указываем оба загрузчика
+    }
 }
 
 loom {
