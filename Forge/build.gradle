@@ -11,8 +11,7 @@ architectury {
 }
 
 loom {
-    // Указываем путь напрямую, чтобы не зависеть от настроек модуля Common
-    accessWidenerPath = file("../Common/src/main/resources/hexcasting.accesswidener")
+    accessWidenerPath = project(":Common").loom.accessWidenerPath
 }
 
 configurations {
@@ -29,7 +28,6 @@ dependencies {
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
-    // Зависимости для Forge
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
@@ -49,6 +47,4 @@ dependencies {
     modRuntimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
 }
 
-processResources {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
+processResources { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
