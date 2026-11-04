@@ -1,10 +1,174 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.2.6'
+    }
+}
+
 plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "2.0.20"
     id 'idea'
-    id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
-    id 'architectury-plugin' version '3.4-SNAPSHOT' apply false   // <-- ДОБАВЛЕНО
+    // Подключаем все нужные плагины для подпроектов
+    id 'dev.architectury.loom' version '1.7-SNAPSHOT' apply false
+    id 'architectury-plugin' version '3.4-SNAPSHOT' apply false
     id 'net.neoforged.moddev' version '2.0.141' apply false
     id("at.petra-k.PKPlugin") version "0.1.0-pre-87"
     id("at.petra-k.PKSubprojPlugin") version "0.1.0-pre-87" apply false
+}
+
+repositories {
+    mavenCentral()
+    // Modrinth для Pehkui и Paucal
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven { url 'https://maven.blamejared.com' }   // Patchouli, JEI
+    maven { url 'https://maven.theillusivec4.top/' } // Curios, Caelus
+}
+
+pkpcpbp {
+    modInfo {
+        modID(project.modID)
+        mcVersion(project.minecraftVersion)
+        modVersion(project.modVersion)
+    }
+    curseforgeInfo {
+        id 569849
+        stability "beta"
+        token(System.getenv("CURSEFORGE_TOKEN"))
+    }
+    modrinthInfo {
+        id "nTW3yKrm"
+        stability "beta"
+        token(System.getenv("MODRINTH_TOKEN"))
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        mavenCentral()
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "Modrinth"
+                    url = "https://api.modrinth.com/maven"
+                }
+            }
+            filter {
+                includeGroup "maven.modrinth"
+            }
+        }
+        maven { url 'https://maven.blamejared.com' }
+        maven { url 'https://maven.theillusivec4.top/' }
+    }
+
+    dependencies {
+        // Зависимости, которые нужны модулю Common
+        modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
+        modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
+
+        modCompileOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
+        modRuntimeOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
+
+        modCompileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.2.313"
+        modRuntimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.2.313"
+
+        modCompileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6" // Pehkui
+        modRuntimeOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
+
+        modCompileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
+        modRuntimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
+
+        modCompileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd" // Paucal
+        modRuntimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
+    }
+
+    def javaToolchains = extensions.getByType(org.gradle.jvm.toolchain.JavaToolchainService)
+
+    tasks.withType(JavaCompile).configureEach {
+        it.javaCompiler = javaToolchains.compilerFor { languageVersion = JavaLanguageVersion.of(21) }
+        it.options.encoding = 'UTF-8'
+        it.options.release = 21
+        it.sourceCompatibility = JavaVersion.VERSION_21.toString()
+        it.targetCompatibility = JavaVersion.VERSION_21.toString()
+    }
+
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
+    }
+
+    sourceSets.main.kotlin.srcDirs += 'src/main/java'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    kotlin {
+        jvmToolchain(21)
+    }
+
+    configurations.configureEach {
+        attributes.attribute(org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 21)
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "21"
+        }
+    }
+
+    // Фикс дубликатов JSON
+    processResources {
+        exclude '.cache'
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    sourcesJar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        exclude "META-INF/neoforge.mods.toml"
+    }
+}
+
+allprojects {
+    tasks.withType(ProcessResources).configureEach {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xmaxerrs" << "1000"
+        }
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "21"
+        }
+    }
+
+    tasks.register("runAllDatagen") {
+        dependsOn ":Forge:runXplatDatagen"
+        dependsOn ":Forge:runForgeDatagen"
+    }
 }
