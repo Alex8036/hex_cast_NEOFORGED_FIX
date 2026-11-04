@@ -29,8 +29,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
     mappings loom.officialMojangMappings()
 
-    // ИСПРАВЛЕНО: используем конфигурацию "forge", а не "neoForge"
-    forge "net.neoforged:forge:${rootProject.neoforge_version}"
+    // ИСПРАВЛЕНО: используем neoForge и артефакт net.neoforged:neoforge
+    neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
 
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
