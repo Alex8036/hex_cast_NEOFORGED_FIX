@@ -17,11 +17,11 @@
       }
     }
   ],
-  "item": "hexcasting:amethyst_dust",
+  "item": "hexcasting:charged_amethyst",
   "functions": [
     {
       "function": "minecraft:set_count",
-      "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 },
+      "count": 1.0,
       "add": false
     }
   ]
