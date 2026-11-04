@@ -5,10 +5,8 @@ plugins {
 }
 
 architectury {
-    // ИСПРАВЛЕНО: указываем neoforge, а не forge
-    architectury {
-        common("fabric", "neoforge") // указываем оба загрузчика
-    }
+    // ИСПОЛЬЗУЕМ СПИСОК ИЗ gradle.properties
+    common(rootProject.enabled_platforms.split(","))
 }
 
 loom {
@@ -19,6 +17,11 @@ dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
     mappings loom.officialMojangMappings()
 
-    // Fabric Loader оставляем — он нужен для аннотаций @Environment в общем коде
+    // Fabric Loader нужен для общих аннотаций
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    // Зависимости для компиляции общего кода (без загрузчиков)
+    modCompileOnly "at.petra-k.paucal:paucal:${project.paucal_version}+${rootProject.minecraftVersion}-common"
+    modCompileOnly "vazkii.patchouli:Patchouli-xplat:1.21-${project.patchouli_version}-SNAPSHOT"
+    modCompileOnly "dev.emi:emi-api:${project.emi_version}"
 }
