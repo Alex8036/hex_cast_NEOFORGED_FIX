@@ -22,12 +22,19 @@ configurations {
 }
 
 dependencies {
+    // Явно указываем Minecraft и маппинги для Loom
+    minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
+    mappings loom.officialMojangMappings()
+
+    // Зависимость на NeoForge
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
 
+    // Модуль Common
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
+    // Зависимости для Forge
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
@@ -37,14 +44,16 @@ dependencies {
     modCompileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.2.313"
     modRuntimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.2.313"
 
-    modCompileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
+    modCompileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6" // Pehkui
     modRuntimeOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
 
     modCompileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
     modRuntimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
 
-    modCompileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
+    modCompileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd" // Paucal
     modRuntimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
 }
 
-processResources { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
