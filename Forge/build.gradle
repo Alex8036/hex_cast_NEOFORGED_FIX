@@ -1,6 +1,7 @@
 plugins {
     id "java"
     id "org.jetbrains.kotlin.jvm"
+    id "dev.architectury.loom" // <-- ЭТА СТРОКА БЫЛА ПРОПУЩЕНА
 }
 
 architectury {
@@ -26,31 +27,31 @@ dependencies {
     // Architectury API
     modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
 
-    // Модуль Common (основной код мода)
+    // Модуль Common
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
-    // 1. CURIOUS API (Исправляет текущую ошибку с LensCurioRenderer)
+    // CURIOUS API
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
-    // 2. PATCHOULI
+    // PATCHOULI
     modCompileOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
     modRuntimeOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
 
-    // 3. JEI
+    // JEI
     modCompileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.2.313"
     modRuntimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.2.313"
 
-    // 4. PEHKUI (Точные координаты Modrinth)
+    // PEHKUI
     modCompileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
     modRuntimeOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
 
-    // 5. CAELUS (Официальные координаты)
+    // CAELUS
     modCompileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
     modRuntimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
 
-    // 6. PAUCAL (Точные координаты Modrinth)
+    // PAUCAL
     modCompileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
     modRuntimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
 }
