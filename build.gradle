@@ -11,7 +11,8 @@ plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "2.0.20"
     id 'idea'
-    id 'dev.architectury.loom' version '1.7-SNAPSHOT' apply false
+    // Обновлено: 1.11-SNAPSHOT для совместимости с Gradle 8.14
+    id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT' apply false
     id 'net.neoforged.moddev' version '2.0.141' apply false
     id("at.petra-k.PKPlugin") version "0.1.0-pre-87"
@@ -74,8 +75,6 @@ subprojects {
         maven { url 'https://maven.blamejared.com' }
         maven { url 'https://maven.theillusivec4.top/' }
     }
-
-    // Блок dependencies удален отсюда, он теперь в Forge/build.gradle
 
     def javaToolchains = extensions.getByType(org.gradle.jvm.toolchain.JavaToolchainService)
 
