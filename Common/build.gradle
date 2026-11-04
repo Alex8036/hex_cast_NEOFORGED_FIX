@@ -5,21 +5,17 @@ plugins {
 }
 
 architectury {
-    // Указываем, что этот модуль общий для платформы forge (NeoForge)
     common("forge")
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/hexcasting.accesswidener")
+    // ИСПРАВЛЕНО: указываем реальное имя файла, которое лежит в репозитории
+    accessWidenerPath = file("src/main/resources/hexplat.accesswidener")
 }
 
 dependencies {
-    // Самое важное: указываем версию Minecraft и маппинги
     minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
     mappings loom.officialMojangMappings()
 
-    // Fabric Loader нужен для аннотаций @Environment в общем коде
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-
-    // Если в Common нужны другие общие библиотеки, добавь их сюда
 }
