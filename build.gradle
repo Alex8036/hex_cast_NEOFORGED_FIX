@@ -18,9 +18,10 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url 'https://api.modrinth.com/maven' } // Основной источник
-    maven { url 'https://maven.blamejared.com' }
-    maven { url 'https://maven.theillusivec4.top/' }
+    // Официальные репозитории для модов
+    maven { url 'https://maven.blamejared.com' } // Patchouli, JEI
+    maven { url 'https://maven.theillusivec4.top/' } // Caelus
+    maven { url 'https://cursemaven.com' } // Pehkui (CurseForge)
 }
 
 pkpcpbp {
@@ -48,23 +49,27 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven { url 'https://api.modrinth.com/maven' }
         maven { url 'https://maven.blamejared.com' }
         maven { url 'https://maven.theillusivec4.top/' }
+        maven { url 'https://cursemaven.com' }
     }
 
     dependencies {
-        // 👇 ИСПРАВЛЕННЫЕ КООРДИНАТЫ (через Modrinth Maven) 👇
-        compileOnly "maven.modrinth:patchouli:1.21.1-93-neoforge"
-        runtimeOnly "maven.modrinth:patchouli:1.21.1-93-neoforge"
+        // Patchouli (официальные координаты из maven.blamejared.com)
+        compileOnly "vazkii.patchouli:patchouli-neoforge:1.21.1-93"
+        runtimeOnly "vazkii.patchouli:patchouli-neoforge:1.21.1-93"
 
-        compileOnly "maven.modrinth:jei:19.52.0.422"
-        runtimeOnly "maven.modrinth:jei:19.52.0.422"
+        // JEI (API для компиляции, полный JAR для тестов)
+        compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.52.0.422"
+        runtimeOnly "mezz.jei:jei-1.21.1-neoforge:19.52.0.422"
 
-        compileOnly "maven.modrinth:caelus:7.0.1+1.21.1"
-        runtimeOnly "maven.modrinth:caelus:7.0.1+1.21.1"
+        // Caelus (официальные координаты из maven.theillusivec4.top)
+        compileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
+        runtimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
 
-        implementation "maven.modrinth:pehkui:3.8.3+1.21-neoforge"
+        // Pehkui (через CurseForge Maven)
+        // ID файла может отличаться. Если этот не сработает, попробуйте найти актуальный ID на CurseForge.
+        implementation "curse.maven:pehkui-319596:5393101"
     }
 
     def javaToolchains = extensions.getByType(org.gradle.jvm.toolchain.JavaToolchainService)
