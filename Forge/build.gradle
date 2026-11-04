@@ -22,6 +22,7 @@ configurations {
     common
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
+    // ИСПРАВЛЕНО: developmentNeoForge вместо developmentForge
     developmentNeoForge.extendsFrom common
 }
 
@@ -29,14 +30,14 @@ dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
     mappings loom.officialMojangMappings()
 
-    // ГЛАВНАЯ СТРОКА
+    // ИСПРАВЛЕНО: neoForge и правильный артефакт
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
 
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
+    // ИСПРАВЛЕНО: transformProductionNeoForge
     shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
-    // Зависимости для Forge/NeoForge
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
