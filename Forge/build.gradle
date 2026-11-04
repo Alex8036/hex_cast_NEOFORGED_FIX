@@ -29,14 +29,13 @@ dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
     mappings loom.officialMojangMappings()
 
-    // ИСПРАВЛЕНО: используем neoForge и артефакт net.neoforged:neoforge
-    neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
+    // ИСПРАВЛЕНО: конфигурация называется "forge", а артефакт — "net.neoforged:neoforge"
+    forge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
 
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
-    // Остальные зависимости без изменений
     modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
     modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
