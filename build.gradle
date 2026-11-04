@@ -18,9 +18,21 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url 'https://api.modrinth.com/maven' } // Моды (Pehkui, Paucal)
-    maven { url 'https://maven.blamejared.com' }   // Patchouli, JEI
-    maven { url 'https://cursemaven.com' }         // Caelus (через CurseForge)
+    // Используем Modrinth как основной и самый надежный источник для модов
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    // Резервные репозитории для других библиотек
+    maven { url 'https://maven.blamejared.com' }
+    maven { url 'https://maven.theillusivec4.top/' }
 }
 
 pkpcpbp {
@@ -48,29 +60,39 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven { url 'https://api.modrinth.com/maven' }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "Modrinth"
+                    url = "https://api.modrinth.com/maven"
+                }
+            }
+            filter {
+                includeGroup "maven.modrinth"
+            }
+        }
         maven { url 'https://maven.blamejared.com' }
-        maven { url 'https://cursemaven.com' }
+        maven { url 'https://maven.theillusivec4.top/' }
     }
 
     dependencies {
-        // Patchouli (Официальные координаты для NeoForge)
+        // 1. Patchouli (Официальные координаты для NeoForge)
         compileOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
         runtimeOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
 
-        // JEI (API для компиляции, полный JAR для игры)
+        // 2. JEI (API для компиляции, полный JAR для игры)
         compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.2.313"
         runtimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.2.313"
 
-        // Caelus (ИСПРАВЛЕНО: через Curse Maven)
-        compileOnly "curse.maven:caelus-308989:5694215"
-        runtimeOnly "curse.maven:caelus-308989:5694215"
+        // 3. Caelus (Используем точные координаты Modrinth)
+        compileOnly "maven.modrinth:40FYwb4z:KsfI4QsR"
+        runtimeOnly "maven.modrinth:40FYwb4z:KsfI4QsR"
 
-        // Pehkui (ИСПРАВЛЕНО: точные координаты Modrinth)
+        // 4. Pehkui (Используем точные координаты Modrinth)
         compileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
         runtimeOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
 
-        // Paucal (Через Modrinth по ID проекта и версии)
+        // 5. Paucal (Используем точные координаты Modrinth)
         compileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
         runtimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
     }
