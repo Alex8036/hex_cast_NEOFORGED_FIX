@@ -11,7 +11,8 @@ architectury {
 }
 
 loom {
-    accessWidenerPath = project(":Common").loom.accessWidenerPath
+    // ИСПРАВЛЕНО: явно указываем путь к файлу, чтобы избежать конфликтов
+    accessWidenerPath = file("../Common/src/main/resources/hexplat.accesswidener")
 }
 
 configurations {
@@ -22,15 +23,12 @@ configurations {
 }
 
 dependencies {
-    // Явно указываем Minecraft и маппинги для Loom
     minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
     mappings loom.officialMojangMappings()
 
-    // Зависимость на NeoForge
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
     modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
 
-    // Модуль Common
     common(project(path: ":Common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
