@@ -1,85 +1,18 @@
 plugins {
-    id "net.neoforged.moddev"
-    id "at.petra-k.PKSubprojPlugin"
+    id "dev.architectury.loom"
+    id "architectury-plugin"
+    id "org.jetbrains.kotlin.jvm"
 }
 
-pkSubproj {
-    platform "common"
+architectury {
+    common(rootProject.enabled_platforms.split(","))
 }
 
-neoForge {
-    neoFormVersion = "1.21.1-20240808.144430"
-}
-
-repositories {
-    mavenCentral()
-    maven { url "https://maven.neoforged.net/releases" }
-    maven { url "https://maven.blamejared.com" }
-    maven {
-        name = "CurseMaven"
-        url = "https://cursemaven.com"
-        content { includeGroup "curse.maven" }
-    }
-    maven {
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-    maven {
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }
-    flatDir { dir "libs" }
+loom {
+    accessWidenerPath = file("src/main/resources/hexcasting.accesswidener")
 }
 
 dependencies {
-    compileOnly group: "org.spongepowered", name: "mixin", version: "0.8.5"
-    implementation group: "com.google.code.findbugs", name: "jsr305", version: "3.0.1"
-
-    compileOnly files("libs/paucal-0.7.0+neoforge-1.21.1.jar")
-    compileOnly files("libs/Patchouli-1.21.1-93-NEOFORGE.jar")
-
-    compileOnly "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
-    testCompileOnly "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
-
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.1"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.1"
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
-kotlin {
-    jvmToolchain(21)
-}
-
-sourceSets {
-    main {
-        java {
-            exclude "at/petrak/hexcasting/datagen/**"
-            exclude "at/petrak/hexcasting/interop/patchouli/**"
-            exclude "at/petrak/hexcasting/mixin/accessor/client/AccessorCompositeRenderType.java"
-            exclude "at/petrak/hexcasting/mixin/accessor/client/AccessorEmptyTextureStateShard.java"
-        }
-        kotlin {
-            exclude "at/petrak/hexcasting/datagen/**"
-            exclude "at/petrak/hexcasting/interop/patchouli/**"
-        }
-    }
-}
-
-test {
-    useJUnitPlatform()
-}
-
-processResources {
-    def buildProps = project.properties.clone()
-
-    filesMatching(["pack.mcmeta"]) {
-        expand buildProps
-    }
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    // Здесь можно оставить только общие зависимости, специфичные для Forge — в Forge/build.gradle
 }
