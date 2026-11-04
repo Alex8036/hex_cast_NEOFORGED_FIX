@@ -18,9 +18,9 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url 'https://api.modrinth.com/maven' } // Моды (Pehkui, Paucal)
-    maven { url 'https://maven.blamejared.com' }   // Patchouli, JEI
-    maven { url 'https://maven.theillusivec4.top/' } // Caelus
+    maven { url 'https://api.modrinth.com/maven' } // Для Paucal и Pehkui
+    maven { url 'https://maven.blamejared.com' }   // Официальный для Patchouli и JEI
+    maven { url 'https://maven.theillusivec4.top/' } // Официальный для Caelus
 }
 
 pkpcpbp {
@@ -54,23 +54,23 @@ subprojects {
     }
 
     dependencies {
-        // 1. Patchouli (Официальные координаты для NeoForge)
+        // Patchouli (Официальные координаты)
         compileOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
         runtimeOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
 
-        // 2. JEI (API для компиляции, полный JAR для игры)
+        // JEI (API для компиляции, полный JAR для игры)
         compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.2.313"
         runtimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.2.313"
 
-        // 3. Caelus (Официальный репозиторий)
-        compileOnly "top.theillusivec4.caelus:caelus-neoforge:7.0.1+1.21.1"
-        runtimeOnly "top.theillusivec4.caelus:caelus-neoforge:7.0.1+1.21.1"
+        // Caelus (ИСПРАВЛЕНО: используем com.illusivesoulworks)
+        compileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
+        runtimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
 
-        // 4. Pehkui (Через Modrinth)
+        // Pehkui (Через Modrinth)
         compileOnly "maven.modrinth:pehkui:3.8.3+1.21-neoforge"
         runtimeOnly "maven.modrinth:pehkui:3.8.3+1.21-neoforge"
 
-        // 5. Paucal (Через Modrinth по ID проекта и версии)
+        // Paucal (Через Modrinth по ID проекта и версии)
         compileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
         runtimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
     }
@@ -115,7 +115,7 @@ subprojects {
         }
     }
 
-    // Игнорируем дубликаты файлов (решает проблему с global_loot_modifiers)
+    // Решение проблемы с дубликатами JSON
     processResources {
         exclude '.cache'
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
