@@ -11,7 +11,8 @@ architectury {
 }
 
 loom {
-    accessWidenerPath = project(":Common").loom.accessWidenerPath
+    // Указываем путь напрямую, чтобы не зависеть от настроек модуля Common
+    accessWidenerPath = file("../Common/src/main/resources/hexcasting.accesswidener")
 }
 
 configurations {
