@@ -1,399 +1,60 @@
 plugins {
     id "java"
-    id "maven-publish"
-    id "net.neoforged.moddev"
-    id "at.petra-k.PKSubprojPlugin"
+    id "org.jetbrains.kotlin.jvm"
 }
 
-pkSubproj {
-    platform "neoforge"
-    curseforgeJar jar.archiveFile
-    curseforgeDependencies[]
-    modrinthJar jar.archiveFile
-    modrinthDependencies[]
+architectury {
+    platformSetupLoomIde()
+    neoForge()
 }
 
-repositories {
-    mavenCentral()
-    maven { url 'https://api.modrinth.com/maven' }
-    maven { url 'https://maven.theillusivec4.top/' }
-    maven { url = "https://maven.neoforged.net/releases" }
-    maven { url = "https://maven.architectury.dev/" }
-    maven { url = "https://maven.blamejared.com" }
-    maven {
-        name = "CurseMaven"
-        url = "https://cursemaven.com"
-        content { includeGroup "curse.maven" }
-    }
-    maven {
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-    maven {
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }
-    maven { url = "https://maven.theillusivec4.top" }
-    maven { url = "https://jitpack.io" }
-    maven {
-        name = "Kotlin for Forge"
-        url = "https://thedarkcolour.github.io/KotlinForForge/"
-        content { includeGroup "thedarkcolour" }
-    }
-    flatDir { dir "libs" }
+loom {
+    accessWidenerPath = project(":Common").loom.accessWidenerPath
 }
 
 configurations {
-    readyMods {
-        canBeConsumed = false
-        canBeResolved = true
-        transitive = false
-    }
+    common
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentNeoForge.extendsFrom common
 }
 
 dependencies {
-    // Зависимости для модуля Forge
-    
-    // Pehkui (точные координаты Modrinth)
-    compileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
-    runtimeOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
+    // Базовая зависимость NeoForge
+    neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
 
-    // Caelus (официальные координаты)
-    compileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
-    runtimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
+    // Architectury API
+    modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_api_version}"
 
-    // Остальные зависимости, которые уже были (Patchouli, JEI и т.д.)
-    // ... (скопируй сюда остальные строки из старого блока dependencies, если они есть) ...
-}
+    // Модуль Common (основной код мода)
+    common(project(path: ":Common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":Common", configuration: "transformProductionNeoForge")) { transitive false }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
+    // 1. CURIOUS API (Исправляет текущую ошибку с LensCurioRenderer)
+    modCompileOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1:api"
+    modRuntimeOnly "top.theillusivec4.curios:curios-neoforge:9.5.1+1.21.1"
 
-kotlin {
-    jvmToolchain(21)
-}
+    // 2. PATCHOULI
+    modCompileOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
+    modRuntimeOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
 
-neoForge {
-    version = project.findProperty("neoForgeVersion") ?: project.findProperty("neoForgeVersion")
-    validateAccessTransformers = false
+    // 3. JEI
+    modCompileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.2.313"
+    modRuntimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.2.313"
 
-    runs {
-        client {
-            client()
-            gameDirectory = file("run")
-        }
-        server {
-            server()
-            gameDirectory = file("run")
-        }
-        xplatDatagen {
-            data()
-            gameDirectory = file("run")
-            programArguments.addAll("--mod", modID, "--all", "--output", file("../Common/src/generated/resources/").absolutePath, "--existing", file("../Common/src/main/resources/").absolutePath)
-            systemProperty "hexcasting.xplat_datagen", "true"
-        }
-        forgeDatagen {
-            data()
-            gameDirectory = file("run")
-            programArguments.addAll("--mod", modID, "--all", "--output", file("src/generated/resources/").absolutePath, "--existing", file("src/main/resources/").absolutePath)
-            systemProperty "hexcasting.forge_datagen", "true"
-        }
-    }
+    // 4. PEHKUI (Точные координаты Modrinth)
+    modCompileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
+    modRuntimeOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
 
-    mods {
-        hexcasting {
-            sourceSet sourceSets.main
-            sourceSet project(":Common").sourceSets.main
-        }
-    }
-}
+    // 5. CAELUS (Официальные координаты)
+    modCompileOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1:api"
+    modRuntimeOnly "com.illusivesoulworks.caelus:caelus-neoforge:7.0.1+1.21.1"
 
-compileJava {
-    source(project(":Common").sourceSets.main.allSource)
-    source(fileTree("../Common/src/main/java") {
-        include "at/petrak/hexcasting/interop/patchouli/**"
-    })
-}
-compileKotlin {
-    source(project(":Common").sourceSets.main.kotlin)
-}
-compileTestKotlin {
-    source(project(":Common").sourceSets.main.kotlin)
-}
-
-tasks.withType(Javadoc).configureEach {
-    enabled = false
-}
-
-tasks.named("jar", Jar) {
-    archiveBaseName = "hexcast-neoforged-${project.minecraftVersion}"
-    from(rootProject.file("LICENSE.txt")) {
-        into "META-INF"
-    }
-}
-
-tasks.named("sourcesJar", Jar) {
-    archiveBaseName = "hexcast-neoforged-${project.minecraftVersion}"
-}
-tasks.named("javadocJar", Jar) {
-    archiveBaseName = "hexcast-neoforged-${project.minecraftVersion}"
-}
-
-tasks.matching { it.name.toLowerCase().contains("test") }.configureEach {
-    enabled = false
-}
-
-sourceSets {
-    main.java.setSrcDirs(["src/main/java"])
-    main.kotlin.setSrcDirs(["src/main/java"])
-    main.java.exclude "at/petrak/hexcasting/forge/datagen/**"
-    main.kotlin.exclude "at/petrak/hexcasting/forge/datagen/**"
-    main.java.exclude "at/petrak/hexcasting/forge/cap/ForgeCapabilityHandler.java"
-    main.java.exclude "at/petrak/hexcasting/forge/cap/HexCapabilities.java"
-    main.java.exclude "at/petrak/hexcasting/forge/cap/adimpl/CapClientCastingStack.java"
-    main.java.exclude "at/petrak/hexcasting/forge/recipe/ForgeModConditionalIngredient.java"
-    main.java.exclude "at/petrak/hexcasting/forge/recipe/ForgeUnsealedIngredient.java"
-    main.java.exclude "at/petrak/hexcasting/forge/mixin/ForgeMixinDatagenModLoader.java"
-    main.java.exclude "at/petrak/hexcasting/forge/mixin/ForgeMixinTagsProvider.java"
-    main.resources.srcDirs += ["src/generated/resources", "../Common/src/generated/resources"]
-    test.kotlin.srcDirs += "src/main/java"
+    // 6. PAUCAL (Точные координаты Modrinth)
+    modCompileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
+    modRuntimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
 }
 
 processResources {
-    from project(":Common").sourceSets.main.resources
-    inputs.property "version", project.version
-    includeEmptyDirs = false
-
-    eachFile { details ->
-        if (details.path.startsWith("data/")) {
-            details.path = details.path
-                .replace("/advancements/", "/advancement/")
-                .replace("/item_modifiers/", "/item_modifier/")
-                .replace("/loot_tables/", "/loot_table/")
-                .replace("/recipes/", "/recipe/")
-                .replace("/tags/blocks/", "/tags/block/")
-                .replace("/tags/entity_types/", "/tags/entity_type/")
-                .replace("/tags/fluids/", "/tags/fluid/")
-                .replace("/tags/game_events/", "/tags/game_event/")
-                .replace("/tags/items/", "/tags/item/")
-        }
-    }
-
-    filesMatching("META-INF/neoforge.mods.toml") {
-        expand "version": project.version
-    }
-
-    doLast {
-        def jsonSlurper = new groovy.json.JsonSlurper()
-        def jsonOutput = groovy.json.JsonOutput
-        def resourcesDir = destinationDir
-
-        def eachJson = { Closure action ->
-            fileTree(resourcesDir).matching { include "**/*.json" }.files.each { file ->
-                def text = file.getText("UTF-8")
-                if (text.trim().isEmpty()) return
-                def json = jsonSlurper.parseText(text)
-                action(file, json)
-            }
-        }
-
-        def rewrite = { File file, Object json ->
-            file.setText(jsonOutput.prettyPrint(jsonOutput.toJson(json)) + System.lineSeparator(), "UTF-8")
-        }
-
-        def removeEmptyDirs
-        removeEmptyDirs = { File dir ->
-            dir.listFiles()?.each { child ->
-                if (child.isDirectory()) removeEmptyDirs(child)
-            }
-            if (dir.exists() && dir.isDirectory() && (dir.listFiles() == null || dir.listFiles().length == 0)) {
-                dir.delete()
-            }
-        }
-
-        def fixItemStackLike
-        fixItemStackLike = { Object node ->
-            if (node instanceof Map) {
-                if (node.containsKey("item") && !node.containsKey("id")) {
-                    node["id"] = node.remove("item")
-                }
-                node.values().each { fixItemStackLike(it) }
-            } else if (node instanceof List) {
-                node.each { fixItemStackLike(it) }
-            }
-        }
-
-        def containsTypedNode
-        containsTypedNode = { Object node, String type ->
-            if (node instanceof Map) {
-                if (node["type"] == type) return true
-                return node.values().any { containsTypedNode(it, type) }
-            } else if (node instanceof List) {
-                return node.any { containsTypedNode(it, type) }
-            }
-            return false
-        }
-
-        def remapCommonTags
-        remapCommonTags = { Object node ->
-            if (node instanceof Map) {
-                if (node["tag"] instanceof String && node["tag"].startsWith("forge:")) {
-                    def tagPath = node["tag"].substring("forge:".length())
-                    node["tag"] = "c:" + (tagPath == "leather" ? "leathers" : tagPath)
-                }
-                node.values().each { remapCommonTags(it) }
-            } else if (node instanceof List) {
-                node.each { remapCommonTags(it) }
-            }
-        }
-
-        def fixItemPredicates
-        fixItemPredicates = { Object node ->
-            if (node instanceof Map) {
-                if (node.containsKey("tag") && !node.containsKey("items")) {
-                    node["items"] = "#" + node.remove("tag")
-                }
-                node.values().each { fixItemPredicates(it) }
-            } else if (node instanceof List) {
-                node.each { fixItemPredicates(it) }
-            }
-        }
-
-        def recipeRoot = new File(resourcesDir, "data")
-        fileTree(recipeRoot).matching { include "**/recipe/**/*.json" }.files.each { file ->
-            def json = jsonSlurper.parseText(file.getText("UTF-8"))
-            def type = json instanceof Map ? json["type"] : null
-            if (type == "forge:conditional"
-                || containsTypedNode(json, "hexcasting:mod_conditional")) {
-                file.delete()
-                return
-            }
-            remapCommonTags(json)
-            if (json instanceof Map && json["result"] != null) {
-                if (json["result"] instanceof String) {
-                    def result = ["id": json["result"]]
-                    if (json["count"] != null) {
-                        result["count"] = json.remove("count")
-                    }
-                    json["result"] = result
-                } else {
-                    fixItemStackLike(json["result"])
-                }
-            }
-            rewrite(file, json)
-        }
-
-        fileTree(resourcesDir).matching {
-            include "data/**/loot_modifiers/**/*.json"
-        }.files.each { file ->
-            def json = jsonSlurper.parseText(file.getText("UTF-8"))
-            def remapLootConditions
-            remapLootConditions = { Object node ->
-                if (node instanceof Map) {
-                    if (node["condition"] == "forge:loot_table_id") {
-                        node["condition"] = "neoforge:loot_table_id"
-                    }
-                    node.values().each { remapLootConditions(it) }
-                } else if (node instanceof List) {
-                    node.each { remapLootConditions(it) }
-                }
-            }
-            remapLootConditions(json)
-            rewrite(file, json)
-        }
-
-        def writeTag = { String path, List<String> values ->
-            def file = new File(resourcesDir, "data/c/tags/item/${path}.json")
-            file.parentFile.mkdirs()
-            rewrite(file, ["values": values])
-        }
-
-        writeTag("dusts/glowstone", ["minecraft:glowstone_dust"])
-        writeTag("dyes/brown", ["minecraft:brown_dye"])
-        writeTag("ingots/copper", ["minecraft:copper_ingot"])
-        writeTag("ingots/gold", ["minecraft:gold_ingot"])
-        writeTag("ingots/iron", ["minecraft:iron_ingot"])
-        writeTag("leathers", ["minecraft:leather"])
-        writeTag("nuggets/gold", ["minecraft:gold_nugget"])
-        writeTag("nuggets/iron", ["minecraft:iron_nugget"])
-        writeTag("rods/wooden", ["minecraft:stick"])
-
-        fileTree(resourcesDir).matching {
-            include "data/hexcasting/advancement/**/*.json"
-        }.files.each { file ->
-            def json = jsonSlurper.parseText(file.getText("UTF-8"))
-            if (json instanceof Map) {
-                if (json.display instanceof Map && json.display.icon != null) {
-                    fixItemStackLike(json.display.icon)
-                }
-                if (json.criteria instanceof Map) {
-                    fixItemPredicates(json.criteria)
-                }
-                rewrite(file, json)
-            }
-        }
-
-        fileTree(resourcesDir).matching {
-            include "data/create/**"
-        }.files.each { it.delete() }
-
-        fileTree(resourcesDir).matching {
-            include "data/hexcasting/recipe/compat/**/*.json"
-        }.files.each { it.delete() }
-
-        def grantPatchi = new File(resourcesDir, "data/hexcasting/loot_table/grant_patchi_book.json")
-        if (grantPatchi.exists()) grantPatchi.delete()
-        def grantPatchiAdvancement = new File(resourcesDir, "data/hexcasting/advancement/grant_patchi_book.json")
-        if (grantPatchiAdvancement.exists()) grantPatchiAdvancement.delete()
-
-        def slateLoot = new File(resourcesDir, "data/hexcasting/loot_table/blocks/slate.json")
-        if (slateLoot.exists()) {
-            def json = jsonSlurper.parseText(slateLoot.getText("UTF-8"))
-            json.pools?.each { pool ->
-                pool.entries?.each { entry ->
-                    if (entry instanceof Map) entry.remove("functions")
-                }
-            }
-            rewrite(slateLoot, json)
-        }
-
-        ["amethyst", "aventurine", "citrine"].each { variant ->
-            def leavesLoot = new File(resourcesDir, "data/hexcasting/loot_table/blocks/${variant}_edified_leaves.json")
-            if (leavesLoot.exists()) {
-                def json = jsonSlurper.parseText(leavesLoot.getText("UTF-8"))
-                json.pools?.each { pool ->
-                    if (pool instanceof Map) pool.remove("conditions")
-                }
-                rewrite(leavesLoot, json)
-            }
-        }
-
-        removeEmptyDirs(resourcesDir)
-    }
-}
-
-tasks.register("prepareReadyMods", Copy) {
-    dependsOn tasks.named("jar")
-    into layout.buildDirectory.dir("ready-mods")
-    from tasks.named("jar")
-    from configurations.readyMods
-    doFirst {
-        delete layout.buildDirectory.dir("ready-mods")
-    }
-}
-
-tasks.register("readyModsZip", Zip) {
-    dependsOn tasks.named("prepareReadyMods")
-    archiveFileName = "hexcast-neoforged-1.21.1-ready-mods.zip"
-    destinationDirectory = layout.buildDirectory.dir("distributions")
-    from layout.buildDirectory.dir("ready-mods")
-}
-
-tasks.named("build") {
-    finalizedBy tasks.named("prepareReadyMods")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
