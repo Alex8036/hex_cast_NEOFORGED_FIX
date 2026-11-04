@@ -12,9 +12,9 @@ steps:
     uses: gradle/actions/setup-gradle@v3
 
   - name: Make scripts executable
-    run: |
-      chmod +x ./gradlew
-      chmod +x ./doc/collate_data.py   # 👈 ДОБАВЛЕНА ЭТА СТРОКА
+   run: |
+     chmod +x ./gradlew
+     chmod -R +x ./doc/
 
   - name: Build with Gradle
     run: ./gradlew build -x test
