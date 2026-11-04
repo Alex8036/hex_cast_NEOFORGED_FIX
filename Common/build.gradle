@@ -5,11 +5,11 @@ plugins {
 }
 
 architectury {
-    common("forge")
+    // ИСПРАВЛЕНО: указываем neoforge, а не forge
+    common("neoforge")
 }
 
 loom {
-    // ИСПРАВЛЕНО: указываем реальное имя файла, которое лежит в репозитории
     accessWidenerPath = file("src/main/resources/hexplat.accesswidener")
 }
 
@@ -17,5 +17,6 @@ dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
     mappings loom.officialMojangMappings()
 
+    // Fabric Loader оставляем — он нужен для аннотаций @Environment в общем коде
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 }
