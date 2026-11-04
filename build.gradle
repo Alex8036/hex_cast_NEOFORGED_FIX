@@ -9,7 +9,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id "org.jetbrains.kotlin.jvm"
+    id "org.jetbrains.kotlin.jvm" version "2.0.20"
     id 'idea'
     id 'net.neoforged.moddev' version '2.0.141' apply false
     id("at.petra-k.PKPlugin") version "0.1.0-pre-87"
@@ -41,7 +41,7 @@ pkpcpbp {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'kotlin'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
     apply plugin: 'maven-publish'
 
     def javaToolchains = extensions.getByType(org.gradle.jvm.toolchain.JavaToolchainService)
@@ -106,13 +106,7 @@ allprojects {
         }
     }
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "21"
-        }
-    }
-
-    compileTestKotlin {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {
             jvmTarget = "21"
         }
