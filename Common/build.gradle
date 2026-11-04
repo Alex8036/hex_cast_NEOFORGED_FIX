@@ -14,7 +14,12 @@ loom {
 
 repositories {
     mavenCentral()
-    maven { url "https://api.modrinth.com/maven" } // Явный репозиторий Modrinth
+    maven {
+        url "https://api.modrinth.com/maven"
+        metadataSources {
+            artifact() // Gradle будет искать .jar напрямую, игнорируя отсутствие POM
+        }
+    }
     maven { url "https://maven.neoforged.net/releases/" }
     maven { url "https://maven.blamejared.com" }
 }
@@ -38,8 +43,8 @@ dependencies {
     // Patchouli
     modCompileOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
 
-    // Paucal — используем номер версии вместо ID
-    modCompileOnly "maven.modrinth:TZo2wHFe:0.7.0+neoforge-1.21.1"
+    // PAUCAL: используем ID версии zgpdzVKd, который точно указывает на нужный файл
+    modCompileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
 }
 
 // Исключаем datagen, чтобы обойти ошибки API 1.21
