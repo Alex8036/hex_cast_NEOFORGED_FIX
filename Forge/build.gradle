@@ -6,7 +6,8 @@ plugins {
 }
 
 architectury {
-    // Для NeoForge не нужен platformSetupLoomIde()
+    // ВОЗВРАЩЕНО: этот вызов регистрирует конфигурацию neoForge
+    platformSetupLoomIde()
     neoForge()
 }
 
