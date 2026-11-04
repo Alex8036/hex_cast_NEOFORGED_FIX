@@ -5,7 +5,8 @@ plugins {
 }
 
 architectury {
-    common(rootProject.enabled_platforms.split(","))
+    // Жестко задаем платформу, чтобы не зависеть от gradle.properties
+    common("forge") 
 }
 
 loom {
@@ -13,6 +14,7 @@ loom {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    // Здесь можно оставить только общие зависимости, специфичные для Forge — в Forge/build.gradle
+    // Если в Common нужны какие-то специфичные зависимости, добавь их сюда
+    // Например:
+    // modCompileOnly "какая-то.библиотека:версия"
 }
