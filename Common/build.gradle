@@ -17,6 +17,16 @@ repositories {
     maven { url "https://maven.neoforged.net/releases/" }
 }
 
+// 👇 ДОБАВЛЕНО: делаем namedElements уникальной конфигурацией
+configurations {
+    namedElements {
+        attributes {
+            attribute(org.gradle.api.attributes.Usage.USAGE_ATTRIBUTE,
+                      objects.named(org.gradle.api.attributes.Usage, org.gradle.api.attributes.Usage.JAVA_RUNTIME))
+        }
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${rootProject.minecraftVersion}"
     mappings loom.officialMojangMappings()
@@ -24,6 +34,6 @@ dependencies {
     // Fabric Loader нужен для общих аннотаций
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
-    // ИСПРАВЛЕНО: добавляем neoForge прямо в Common, как требует Loom
+    // NeoForge для общего модуля
     neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
 }
