@@ -11,6 +11,8 @@ plugins {
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "2.0.20"
     id 'idea'
+    // 👇 ДОБАВЛЕНО: объявление плагина с версией, чтобы подпроекты могли его использовать
+    id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
     id 'net.neoforged.moddev' version '2.0.141' apply false
     id("at.petra-k.PKPlugin") version "0.1.0-pre-87"
     id("at.petra-k.PKSubprojPlugin") version "0.1.0-pre-87" apply false
@@ -18,7 +20,6 @@ plugins {
 
 repositories {
     mavenCentral()
-    // Используем Modrinth как основной и самый надежный источник для модов
     exclusiveContent {
         forRepository {
             maven {
@@ -30,7 +31,6 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
-    // Резервные репозитории для других библиотек
     maven { url 'https://maven.blamejared.com' }
     maven { url 'https://maven.theillusivec4.top/' }
 }
@@ -76,23 +76,23 @@ subprojects {
     }
 
     dependencies {
-        // 1. Patchouli (Официальные координаты для NeoForge)
+        // Patchouli
         compileOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
         runtimeOnly "vazkii.patchouli:Patchouli:1.21.1-93-NEOFORGE"
 
-        // 2. JEI (API для компиляции, полный JAR для игры)
+        // JEI
         compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.2.313"
         runtimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.2.313"
 
-        // 3. Caelus (Используем точные координаты Modrinth)
+        // Caelus
         compileOnly "maven.modrinth:40FYwb4z:KsfI4QsR"
         runtimeOnly "maven.modrinth:40FYwb4z:KsfI4QsR"
 
-        // 4. Pehkui (Используем точные координаты Modrinth)
+        // Pehkui
         compileOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
         runtimeOnly "maven.modrinth:t5W7Jfwy:nKHizsl6"
 
-        // 5. Paucal (Используем точные координаты Modrinth)
+        // Paucal
         compileOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
         runtimeOnly "maven.modrinth:TZo2wHFe:zgpdzVKd"
     }
@@ -137,7 +137,6 @@ subprojects {
         }
     }
 
-    // Решение проблемы с дубликатами JSON
     processResources {
         exclude '.cache'
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
